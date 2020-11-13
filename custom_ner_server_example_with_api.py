@@ -17,6 +17,7 @@ import os
 
 # print("Loading model from: {}".format(MODEL_PATH))
 # clf = load(MODEL_PATH)
+from spacy import Language
 from spacy.training.iob_utils import biluo_tags_from_offsets
 
 app = Flask(__name__)
@@ -26,9 +27,11 @@ import flask
 flask.__version__
 
 
+nlp = None
+
+
 class CustomSpacyNER(Resource):
-    def __init__(self, nlp: "Language" = None) -> None:
-        self.nlp = nlp
+    def __init__(self) -> None:
         # self._required_features = ['text', 'entities', 'lang']
         self._required_features = ['text']
         self.reqparse = reqparse.RequestParser()
@@ -40,24 +43,19 @@ class CustomSpacyNER(Resource):
 
     def put(self):
         args = self.reqparse.parse_args()
-        #         X = np.array([args[f] for f in self._required_features]).reshape(1, -1)
-        #         y_pred = clf.predict(X)
-        #         return {'prediction': y_pred.tolist()[0]}
-        print('started sleeping...')
-        sleep(10)
-        print('sleeping finished...')
         for i in args['text']:
             print('RECEIVED: ', i)
+        global nlp
+        print('before check', nlp)
+        if nlp is None:
+            print('Loading the model')
+            nlp = spacy.blank('en')
         return {'train': f'received this from you=={args["text"]}'}
 
     def get(self):
         args = self.reqparse.parse_args()
-        #         X = np.array([args[f] for f in self._required_features]).reshape(1, -1)
-        #         y_pred = clf.predict(X)
-        #         return {'prediction': y_pred.tolist()[0]}
-        print('started sleeping...')
-        sleep(10)
-        print('sleeping finished...')
+        global nlp
+        print('in prediction', nlp)
         for i in args['text']:
             print('RECEIVED: ', i)
         return {'prediction': f'received this from you=={args["text"]}'}
