@@ -64,4 +64,4 @@ class CustomSpacyNER(Resource):
 api.add_resource(CustomSpacyNER, '/train', '/predict')
 
 if __name__ == '__main__':
-    app.run(debug=False,  port=9501)#host='0.0.0.0',
+    app.run(debug=False, host='0.0.0.0', port=9501)
