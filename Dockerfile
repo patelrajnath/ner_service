@@ -8,7 +8,7 @@ RUN apt-get update -qq \
     curl \
  && apt-get autoremove -y
 
-FROM base as builder
+#FROM base as builder
 
 RUN apt-get update -qq && \
   apt-get install -y --no-install-recommends \
@@ -34,7 +34,7 @@ WORKDIR /app
 RUN pip install -r requirements.txt
 
 # start a new build stage
-FROM base as runner
+#FROM base as runner
 
 # change working directory
 WORKDIR /app
