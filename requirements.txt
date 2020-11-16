@@ -1,6 +1,8 @@
 flask
 flask_restful
 spacy-nightly[transformers]
+pyyaml
+configparser
 
 --find-links https://download.pytorch.org/whl/torch_stable.html
 
