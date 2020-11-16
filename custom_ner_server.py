@@ -1,13 +1,11 @@
-import os
+import io
+from configparser import ConfigParser
 from pathlib import Path
 
 import spacy
+import yaml
 from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
-from jinja2.nodes import List
-from joblib import load
-import numpy as np
-import sys
 import os
 
 # MODEL_DIR = os.environ["MODEL_DIR"]
@@ -29,21 +27,24 @@ api = Api(app)
 import flask
 flask.__version__
 
-
 nlp = None
 project_dir = "project-ner"
+project_config_default = '/'.join([project_dir, "project_default.yml"])
+model_config_dir = '/'.join([project_dir, "configs"])
+
+project_config = '/'.join([project_dir, "project.yml"])
 model_path = '/'.join([project_dir, 'training/model-best'])
 
 
 class CustomSpacyNER(Resource):
     def __init__(self) -> None:
-        self._required_features = ['entities', 'params']
+        self._required_features_optional = ['entities', 'params']
         # self._required_features = ['text']
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument(
             'text', type=list, required=True, location='json',
             help='No {} provided'.format('text'))
-        for feature in self._required_features:
+        for feature in self._required_features_optional:
             self.reqparse.add_argument(
                 feature, type=list, required=False, location='json',
                 help='No {} provided'.format(feature))
@@ -68,6 +69,38 @@ class CustomSpacyNER(Resource):
         # for i in args['text']:
         #     print('RECEIVED: ', i)
         print(args["text"], args["entities"], args["params"])
+        params = args["params"][0]
+
+        if params['arch']:
+            model_arch = params['arch']
+        else:
+            model_arch = 'default'
+
+        # Read the default config file
+        with io.open(project_config_default, 'r', encoding='utf8') as config_file:
+            data = yaml.safe_load(config_file)
+        if model_arch == 'transformer':
+            data['vars']['config'] = model_arch
+        # Write the config file
+        with io.open(project_config, 'w', encoding='utf8') as config_file_write:
+            yaml.dump(data, config_file_write, default_flow_style=False, allow_unicode=True)
+
+        # Read the model config file and update the training params
+        model_config_file = '/'.join([model_config_dir, model_arch + '.cfg'])
+        config_object = ConfigParser()
+        config_object.optionxform = str
+        if os.path.isfile(model_config_file):
+            config_object.read(model_config_file)
+        # Update model-configs
+        for param in params:
+            if config_object.has_option('training', param):
+                # print(param, params[param], config_object.has_option('training', param))
+                config_object.set('training', param, str(params[param]))
+                # print(config_object.get('training', param))
+        # Write changes back to file
+        with open(model_config_file, 'w') as conf:
+            config_object.write(conf)
+
         root = Path(project_dir)
         if args["entities"]:
             nlp_blank = spacy.blank('en')
