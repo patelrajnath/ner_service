@@ -6,7 +6,7 @@ This project is to train a spacy NER model via API and run NER using the trained
 $docker build -t ner-service:latest .
 ```
 
-### And add new context for ner-service
+### Add docker-compose context for ner-service
 ```dockerfile
 ner-service:
     image: ner-service:latest
