@@ -120,9 +120,8 @@ class CustomSpacyNER(Resource):
         project_assets(root)
         project_run(root, "all")
         global nlp
-        if nlp is None:
-            print('Loading the trained model..')
-            nlp = self.load_model(model_path)
+        print('Loading the trained model..')
+        nlp = self.load_model(model_path)
         return jsonify({'response': f'NER service is running!'})
 
     @staticmethod
