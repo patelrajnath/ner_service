@@ -108,8 +108,9 @@ class CustomSpacyNER(Resource):
                 for example, example_entities in zip(args["text"], args["entities"]):
                     entities = []
                     doc = nlp_blank(example)
-                    for ent in example_entities:
-                        entities.append((ent.get('start'), ent.get('end'), ent.get('entity')))
+                    if example_entities:
+                        for ent in example_entities:
+                            entities.append((ent.get('start'), ent.get('end'), ent.get('entity')))
 
                     tags = biluo_tags_from_offsets(doc, entities)
                     tokens = [token.text for token in doc]
@@ -144,7 +145,7 @@ class CustomSpacyNER(Resource):
 
         global nlp
         if nlp is None:
-            nlp = self.load_model(model_path)
+            return {'entities': all_extracted}
 
         for text in args["text"]:
             doc = nlp(text)
