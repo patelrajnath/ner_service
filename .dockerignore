@@ -1,0 +1,12 @@
+docker*
+docs
+.git*
+**/*.pyc
+**/__pycache__
+!docker/configs
+venv
+project-ner/training
+project-ner/corpus
+project-ner/metrics
+project-ner/project.lock
+project-ner/project.yml
