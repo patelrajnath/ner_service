@@ -59,7 +59,7 @@ if __name__ == '__main__':
     ]
 
     config_defaults = {
-        "host": '127.0.0.1',
+        "host": '127.0.0.1',  # For docker-compose use 'host': 'custom-ner' (container name)
         "port": 9501,
         "arch": 'default',  # options {'default', 'transformer'}, For transformer, when we run it
         # for the first time it will take additional time for downloading the roberta-base model and configurations
